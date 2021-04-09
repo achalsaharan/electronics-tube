@@ -1,6 +1,10 @@
 import { Link } from 'react-router-dom';
+import { useData } from '../contexts/DataContext';
 
 export function Sidebar({ setRoute }) {
+    const {
+        state: { playLists },
+    } = useData();
     return (
         <div className="flex flex-col min-h-screen shadow-lg divide-y divide-red-100">
             <Link
@@ -48,27 +52,15 @@ export function Sidebar({ setRoute }) {
                 </Link>
 
                 <div className="flex flex-col ml-4 space-y-1 mr-4 mb-2">
-                    <Link
-                        className="flex hover:bg-red-100 p-1 rounded font-light items-center"
-                        to="/"
-                    >
-                        <i className="fas fa-dot-circle fa-xs mr-2"></i>
-                        list 1
-                    </Link>
-                    <Link
-                        className="flex hover:bg-red-100 p-1 rounded font-light items-center"
-                        to="/"
-                    >
-                        <i className="fas fa-dot-circle fa-xs mr-2"></i>
-                        list 2
-                    </Link>
-                    <Link
-                        className="flex hover:bg-red-100 p-1 rounded font-light items-center"
-                        to="/"
-                    >
-                        <i className="fas fa-dot-circle fa-xs mr-2"></i>
-                        list 3
-                    </Link>
+                    {playLists.map((playList) => (
+                        <Link
+                            className="flex hover:bg-red-100 p-1 rounded font-light items-center"
+                            to="/"
+                        >
+                            <i className="fas fa-dot-circle fa-xs mr-2"></i>
+                            {playList.name}
+                        </Link>
+                    ))}
                 </div>
             </div>
 

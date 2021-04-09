@@ -66,6 +66,19 @@ export function setupMockServer() {
                 views: '135,677',
                 date: 'Jan 19, 2021 ',
             });
+
+            server.create('playList', {
+                name: 'watch later',
+                videos: [
+                    {
+                        videoId: 'MMEIVh49pS8',
+                        name: 'Getting started with Git, VSCode and Hosting',
+                        notes: [],
+                        views: '135,677',
+                        date: 'Jan 19, 2021 ',
+                    },
+                ],
+            });
         },
     });
 }

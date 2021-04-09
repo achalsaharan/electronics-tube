@@ -4,11 +4,24 @@ import { Sidebar } from './components/Sidebar';
 import { Home } from './pages/Home';
 import { VideoPage } from './pages/VideoPage';
 import { Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
     return (
         <div className="container mx-auto">
             <Header />
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={true}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+            />
 
             <div className="grid grid-cols-4 mt-20">
                 <div className="hidden md:block md:col-span-1 ">

@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useReducer } from 'react';
 import axios from 'axios';
+import { dataReducer } from './dataReducer';
 export const DataContext = createContext();
 
 const initialStateFromAPI = {
@@ -42,56 +43,10 @@ const initialStateFromAPI = {
     },
 };
 
-function dataReducer(state, action) {
-    switch (action.type) {
-        case 'SET_STATE': {
-            return { ...action.payload };
-        }
-
-        case 'ADD_NOTE': {
-            const newState = {
-                ...state,
-                videos: state.videos.map((video) => {
-                    if (video.id === action.payload.videoId) {
-                        return {
-                            ...video,
-                            notes: [...video.notes, action.payload.note],
-                        };
-                    } else {
-                        return video;
-                    }
-                }),
-            };
-
-            return newState;
-        }
-
-        case 'LIKE_VIDEO': {
-            return {
-                ...state,
-                likedVideos: [...state.likedVideos, action.payload],
-            };
-        }
-
-        case 'UNLIKE_VIDEO': {
-            return {
-                ...state,
-                likedVideos: state.likedVideos.filter(
-                    (video) => video.videoId !== action.payload
-                ),
-            };
-        }
-
-        default:
-            console.log('err in data reducer');
-            break;
-    }
-}
-
 export function DataProvider({ children }) {
     const [state, dispatch] = useReducer(dataReducer, {
         videos: [],
-        playLists: { 'watch later': [] },
+        playLists: [{ name: 'watch later', videos: [] }],
         likedVideos: [],
     });
 
@@ -99,10 +54,12 @@ export function DataProvider({ children }) {
         async function getDataFromServer() {
             const videosData = await axios.get('/api/videos');
             const likedVideosData = await axios.get('/api/likedVideos');
+            const playListData = await axios.get('/api/playLists');
 
             const state = {
                 videos: videosData.data.videos,
                 likedVideos: likedVideosData.data.likedVideos,
+                playLists: playListData.data.playLists,
             };
 
             dispatch({ type: 'SET_STATE', payload: state });

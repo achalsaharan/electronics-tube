@@ -1,42 +1,58 @@
 import axios from 'axios';
 import { useData } from '../../contexts/DataContext';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
 
 export function LikeVideoBtn({ video }) {
+    const [showDescription, setShowDescription] = useState(false);
+
     const {
         state: { likedVideos },
         dispatch,
     } = useData();
 
-    async function handleLikeClick() {
+    async function likeVideo() {
         try {
-            if (isVideoLiked() === false) {
-                const videoToPost = { ...video };
-                delete videoToPost.id;
-                const res = await axios.post('/api/likedVideos', {
-                    likedVideo: videoToPost,
-                });
+            const videoToPost = { ...video };
+            delete videoToPost.id;
+            const res = await axios.post('/api/likedVideos', {
+                likedVideo: videoToPost,
+            });
 
-                console.log(res);
+            toast.success('Liked Video');
 
-                dispatch({ type: 'LIKE_VIDEO', payload: res.data.likedVideo });
-            } else {
-                const videoToDelete = likedVideos.find(
-                    (item) => item.videoId === video.videoId
-                );
-
-                const res = await axios.delete(
-                    `/api/likedVideos/${videoToDelete.id}`
-                );
-
-                console.log(res);
-
-                dispatch({
-                    type: 'UNLIKE_VIDEO',
-                    payload: videoToDelete.videoId,
-                });
-            }
+            dispatch({ type: 'LIKE_VIDEO', payload: res.data.likedVideo });
         } catch (error) {
-            console.log('err in liking / disliking video', error);
+            console.log(error);
+        }
+    }
+
+    async function unlikeVideo() {
+        try {
+            const videoToDelete = likedVideos.find(
+                (item) => item.videoId === video.videoId
+            );
+
+            const res = await axios.delete(
+                `/api/likedVideos/${videoToDelete.id}`
+            );
+
+            toast.success('Unliked Video');
+
+            dispatch({
+                type: 'UNLIKE_VIDEO',
+                payload: videoToDelete.videoId,
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    async function handleLikeClick() {
+        if (isVideoLiked() === false) {
+            likeVideo();
+        } else {
+            unlikeVideo();
         }
     }
 
@@ -53,6 +69,8 @@ export function LikeVideoBtn({ video }) {
 
     return (
         <button
+            onMouseEnter={() => setShowDescription(true)}
+            onMouseLeave={() => setShowDescription(false)}
             style={{
                 color:
                     likedVideos.find(
@@ -65,6 +83,11 @@ export function LikeVideoBtn({ video }) {
             onClick={handleLikeClick}
         >
             <i className="fas fa-heart fa-lg"></i>
+            {showDescription && (
+                <div className="absolute bg-gray-300 p-1 rounded hidden sm:block text-black">
+                    {isVideoLiked() ? 'Unlike Video' : 'Like Video'}
+                </div>
+            )}
         </button>
     );
 }
