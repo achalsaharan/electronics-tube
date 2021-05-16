@@ -1,0 +1,1 @@
+export { btnPrimary } from './styles';

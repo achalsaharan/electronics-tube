@@ -2,9 +2,19 @@ import axios from 'axios';
 import { useData } from '../../contexts/DataContext';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
+import { useAuthentication } from '../../contexts/AuthenticationContext';
+import { useNavigate } from 'react-router-dom';
+
+const API = 'http://localhost:3998';
 
 export function LikeVideoBtn({ video }) {
     const [showDescription, setShowDescription] = useState(false);
+
+    const navigate = useNavigate();
+
+    const {
+        state: { userId },
+    } = useAuthentication();
 
     const {
         state: { likedVideos },
@@ -13,42 +23,46 @@ export function LikeVideoBtn({ video }) {
 
     async function likeVideo() {
         try {
-            const videoToPost = { ...video };
-            delete videoToPost.id;
-            const res = await axios.post('/api/likedVideos', {
-                likedVideo: videoToPost,
+            const res = await axios.post(`${API}/likedvideos/${userId}`, {
+                _id: video._id,
             });
 
-            toast.success('Liked Video');
-
-            dispatch({ type: 'LIKE_VIDEO', payload: res.data.likedVideo });
+            if (res.data.success === true) {
+                toast.success('Liked Video');
+                dispatch({ type: 'LIKE_VIDEO', payload: video });
+            } else {
+                toast.error('Error Liking Video');
+                console.log(res);
+            }
         } catch (error) {
             console.log(error);
+            toast.error('error in the likeVideo function');
         }
     }
 
     async function unlikeVideo() {
         try {
-            const videoToDelete = likedVideos.find(
-                (item) => item.videoId === video.videoId
-            );
-
-            const res = await axios.delete(
-                `/api/likedVideos/${videoToDelete.id}`
-            );
-
-            toast.success('Unliked Video');
-
-            dispatch({
-                type: 'UNLIKE_VIDEO',
-                payload: videoToDelete.videoId,
+            const res = await axios.delete(`${API}/likedvideos/${userId}`, {
+                data: { _id: video._id },
             });
+
+            if (res.data.success === true) {
+                toast.success('unliked video');
+                dispatch({ type: 'UNLIKE_VIDEO', payload: video._id });
+            } else {
+                toast.error('error in unliking video');
+            }
         } catch (error) {
             console.log(error);
         }
     }
 
     async function handleLikeClick() {
+        if (userId === null) {
+            navigate('/login');
+            return;
+        }
+
         if (isVideoLiked() === false) {
             likeVideo();
         } else {

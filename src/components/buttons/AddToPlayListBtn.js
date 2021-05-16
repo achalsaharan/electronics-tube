@@ -1,16 +1,29 @@
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useData } from '../../contexts/DataContext';
+import { useAuthentication } from '../../contexts/AuthenticationContext';
+import { useNavigate } from 'react-router-dom';
 
 export function AddToPlayListBtn({ video }) {
     const [showDescription, setShowDescription] = useState(false);
     const [showPlayListModal, setShowPlayListModal] = useState(false);
+
+    const navigate = useNavigate();
+
+    const {
+        state: { userId },
+    } = useAuthentication();
+
     return (
         <>
             <button
                 onMouseEnter={() => setShowDescription(true)}
                 onMouseLeave={() => setShowDescription(false)}
-                onClick={() => setShowPlayListModal(true)}
+                onClick={() =>
+                    userId !== null
+                        ? setShowPlayListModal(true)
+                        : navigate('/login')
+                }
                 className="static"
             >
                 <i className="fas fa-list-ul fa-lg"></i>
@@ -59,6 +72,12 @@ function PlayListModal({ setShowPlayListModal, video }) {
             toast.error('Play List Already Exists, try using another name');
             return;
         }
+
+        if (newPlayListName === '') {
+            toast.error('Play List Name Can Not Be Left Empty');
+            return;
+        }
+
         setNewPlayListName('');
         dispatch({
             type: 'CREATE_NEW_PLAYLIST',
@@ -77,7 +96,7 @@ function PlayListModal({ setShowPlayListModal, video }) {
         }
     }
 
-    async function handleCheckBoxChange(playList) {
+    async function togglePlayListMembership(playList) {
         try {
             if (isVideoInPlayList(playList)) {
                 addVideoToPlayList(playList);
@@ -119,7 +138,9 @@ function PlayListModal({ setShowPlayListModal, video }) {
                             <input
                                 type="checkbox"
                                 className="mr-6"
-                                onChange={() => handleCheckBoxChange(playList)}
+                                onChange={() =>
+                                    togglePlayListMembership(playList)
+                                }
                                 checked={isVideoInPlayList(playList)}
                             />
                             <p>{playList.name}</p>

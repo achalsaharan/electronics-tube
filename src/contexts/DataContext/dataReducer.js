@@ -4,6 +4,14 @@ export function dataReducer(state, action) {
             return { ...action.payload };
         }
 
+        case 'SET_VIDEOS': {
+            return { ...state, videos: action.payload };
+        }
+
+        case 'SET_LIKED_VIDEOS': {
+            return { ...state, likedVideos: action.payload };
+        }
+
         case 'ADD_NOTE': {
             const newState = {
                 ...state,
@@ -33,7 +41,7 @@ export function dataReducer(state, action) {
             return {
                 ...state,
                 likedVideos: state.likedVideos.filter(
-                    (video) => video.videoId !== action.payload
+                    (video) => video._id !== action.payload
                 ),
             };
         }
@@ -78,6 +86,36 @@ export function dataReducer(state, action) {
                                     video.videoId !==
                                     action.payload.video.videoId
                             ),
+                        };
+                    } else {
+                        return { ...playList };
+                    }
+                }),
+            };
+        }
+
+        case 'RENAME_PLAYLIST': {
+            console.log({
+                ...state,
+                playLists: state.playLists.map((playList) => {
+                    if (playList.name === action.payload.name) {
+                        return {
+                            ...playList,
+                            name: action.payload.newName,
+                        };
+                    } else {
+                        return { ...playList };
+                    }
+                }),
+            });
+
+            return {
+                ...state,
+                playLists: state.playLists.map((playList) => {
+                    if (playList.name === action.payload.name) {
+                        return {
+                            ...playList,
+                            name: action.payload.newName,
                         };
                     } else {
                         return { ...playList };

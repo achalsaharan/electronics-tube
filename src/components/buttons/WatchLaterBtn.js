@@ -2,9 +2,17 @@ import { useData } from '../../contexts/DataContext';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
 import axios from 'axios';
+import { useAuthentication } from '../../contexts/AuthenticationContext';
+import { useNavigate } from 'react-router-dom';
 
 export function WatchLaterBtn({ video }) {
     const [showDescription, setShowDescription] = useState(false);
+
+    const navigate = useNavigate();
+
+    const {
+        state: { userId },
+    } = useAuthentication();
 
     const {
         state: { playLists },
@@ -90,6 +98,11 @@ export function WatchLaterBtn({ video }) {
     }
 
     function handleBtnClick() {
+        if (userId === null) {
+            navigate('/login');
+            return;
+        }
+
         if (isVideoInWatchList()) {
             removeFromWatchList();
         } else {

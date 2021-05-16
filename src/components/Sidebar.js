@@ -6,7 +6,7 @@ export function Sidebar({ setRoute }) {
         state: { playLists },
     } = useData();
     return (
-        <div className="flex flex-col min-h-screen shadow-lg divide-y divide-red-100">
+        <div className="flex flex-col divide-y divide-red-100 h-screen md:sticky md:top-16 md:h-auto">
             <Link
                 className="hover:bg-red-100 p-2 rounded flex items-center"
                 to="/"
@@ -17,45 +17,24 @@ export function Sidebar({ setRoute }) {
 
             <Link
                 className="hover:bg-red-100 p-2 rounded flex items-center"
-                to="/"
+                to="/likedVideos"
             >
                 <i className="fas fa-heart mr-2"></i>
                 Liked Videos
             </Link>
 
-            {/* <div className="flex flex-col">
-				<Link to="/video">video</Link>
-
-				<button
-					onClick={() => setRoute('home')}
-					className="hover:bg-red-100 p-2 rounded flex items-center space-x-2"
-				>
-					<i className="fas fa-home"></i>
-					<span>Home</span>
-				</button>
-			</div> */}
-
-            {/* <div className="flex flex-col">
-				<button className="hover:bg-red-100 p-2 rounded flex items-center space-x-2">
-					<i className="fas fa-heart"></i>
-					<span>Liked Videos</span>
-				</button>
-			</div> */}
-
             <div className="flex flex-col">
-                <Link
-                    className="hover:bg-red-100 p-2 rounded flex items-center"
-                    to="/"
-                >
+                <div className=" p-2 rounded flex items-center">
                     <i className="fas fa-list-ul mr-2"></i>
                     Play Lists
-                </Link>
+                </div>
 
                 <div className="flex flex-col ml-4 space-y-1 mr-4 mb-2">
                     {playLists.map((playList) => (
                         <Link
+                            key={playList.name}
                             className="flex hover:bg-red-100 p-1 rounded font-light items-center"
-                            to="/"
+                            to={`/playList/${playList.name}`}
                         >
                             <i className="fas fa-dot-circle fa-xs mr-2"></i>
                             {playList.name}
@@ -63,21 +42,6 @@ export function Sidebar({ setRoute }) {
                     ))}
                 </div>
             </div>
-
-            <Link
-                className="hover:bg-red-100 p-2 rounded flex items-center"
-                to="/"
-            >
-                <i className="far fa-clock mr-2"></i>
-                Watch Later
-            </Link>
-
-            {/* <div className="flex flex-col">
-				<button className="hover:bg-red-100 p-2 rounded flex items-center space-x-2">
-					<i className="far fa-clock"></i>
-					<span>Watch Later</span>
-				</button>
-			</div> */}
         </div>
     );
 }
