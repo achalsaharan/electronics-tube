@@ -5,6 +5,8 @@ import axios from 'axios';
 import { useAuthentication } from '../../contexts/AuthenticationContext';
 import { useNavigate } from 'react-router-dom';
 
+const API = 'http://localhost:3998';
+
 export function WatchLaterBtn({ video }) {
     const [showDescription, setShowDescription] = useState(false);
 
@@ -25,9 +27,8 @@ export function WatchLaterBtn({ video }) {
         );
 
         if (
-            watchLaterList.videos.find(
-                (item) => item.videoId === video.videoId
-            ) === undefined
+            watchLaterList.videos.find((item) => item._id === video._id) ===
+            undefined
         ) {
             return false;
         } else {
@@ -37,31 +38,22 @@ export function WatchLaterBtn({ video }) {
 
     async function removeFromWatchList() {
         try {
-            const playList = playLists.find(
+            const watchLaterList = playLists.find(
                 (list) => list.name === 'watch later'
             );
 
-            const playListToPost = {
-                ...playList,
-                videos: playList.videos.filter(
-                    (item) => item.videoId !== video.videoId
-                ),
-            };
+            const res = await axios.delete(
+                `${API}/playlists/${watchLaterList._id}/videos`,
+                { data: { videoId: video._id } }
+            );
 
-            const res = await axios.post('/api/playLists', {
-                playList: playListToPost,
-            });
-
-            if (res.status !== 201) {
-                console.log('err in updating resource on the server');
-                return;
+            if (res.data.success === true) {
+                dispatch({
+                    type: 'REMOVE_VIDEO_FROM_PLAYLIST',
+                    payload: { name: 'watch later', video: video },
+                });
+                toast.success('removed video from watch later');
             }
-
-            toast.success('Removed From Watch Later');
-            dispatch({
-                type: 'REMOVE_VIDEO_FROM_PLAYLIST',
-                payload: { name: 'watch later', video: video },
-            });
         } catch (error) {
             console.log(error);
         }
@@ -69,29 +61,26 @@ export function WatchLaterBtn({ video }) {
 
     async function addToWatchList() {
         try {
-            const playList = playLists.find(
+            const watchLaterList = playLists.find(
                 (list) => list.name === 'watch later'
             );
 
-            const playListToPost = {
-                ...playList,
-                videos: [...playList.videos, video],
-            };
+            const res = await axios.post(
+                `${API}/playlists/${watchLaterList._id}/videos`,
+                {
+                    videoId: video._id,
+                }
+            );
 
-            const res = await axios.post('/api/playLists', {
-                playList: playListToPost,
-            });
+            if (res.data.success === true) {
+                console.log(res.data);
+                dispatch({
+                    type: 'ADD_VIDEO_TO_PLAYLIST',
+                    payload: { name: 'watch later', video: video },
+                });
 
-            if (res.status !== 201) {
-                console.log('err updating resource on the server');
-                return;
+                toast.success('Added To Watch Later');
             }
-
-            toast.success('Added To Watch Later');
-            dispatch({
-                type: 'ADD_VIDEO_TO_PLAYLIST',
-                payload: { name: 'watch later', video: video },
-            });
         } catch (error) {
             console.log(error);
         }

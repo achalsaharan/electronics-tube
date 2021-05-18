@@ -12,6 +12,10 @@ export function dataReducer(state, action) {
             return { ...state, likedVideos: action.payload };
         }
 
+        case 'SET_PLAYLISTS': {
+            return { ...state, playLists: action.payload };
+        }
+
         case 'ADD_NOTE': {
             const newState = {
                 ...state,
@@ -47,14 +51,18 @@ export function dataReducer(state, action) {
         }
 
         case 'CREATE_NEW_PLAYLIST': {
-            console.log({
-                ...state,
-                playLists: [...state.playLists, action.payload],
-            });
-
             return {
                 ...state,
                 playLists: [...state.playLists, action.payload],
+            };
+        }
+
+        case 'DELETE_PLAYLIST': {
+            return {
+                ...state,
+                playLists: state.playLists.filter(
+                    (playList) => playList._id !== action.payload
+                ),
             };
         }
 
@@ -83,8 +91,7 @@ export function dataReducer(state, action) {
                             ...playList,
                             videos: playList.videos.filter(
                                 (video) =>
-                                    video.videoId !==
-                                    action.payload.video.videoId
+                                    video._id !== action.payload.video._id
                             ),
                         };
                     } else {

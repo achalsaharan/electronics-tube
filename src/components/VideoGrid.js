@@ -1,36 +1,53 @@
 import { Link } from 'react-router-dom';
 import YouTube from 'react-youtube';
+import { toast } from 'react-toastify';
+import { useData } from '../contexts/DataContext';
+// import { useAuthentication } from '../../contexts/AuthenticationContext';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import {
     AddToPlayListBtn,
     LikeVideoBtn,
     WatchLaterBtn,
 } from '../components/buttons';
 
-export function VideoGrid({ videos }) {
+const API = 'http://localhost:3998';
+
+export function VideoGrid({ videos, playList }) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-2 pb-2">
+            {console.log(playList)}
             {videos.map((item, key) => (
-                <VideoCard key={key} video={item} />
+                <VideoCard key={key} video={item} playList={playList} />
             ))}
         </div>
     );
 }
 
-function VideoCard({ video }) {
-    // function onReady(event) {
-    //     // access to player in all event handlers via event.target
-    //     event.target.pauseVideo();
-    // }
+function VideoCard({ video, playList }) {
+    const {
+        state: { playLists },
+        dispatch,
+    } = useData();
 
-    // const opts = {
-    //     height: '300px',
-    //     width: '100%',
-    //     playerVars: {
-    //         // https://developers.google.com/youtube/player_parameters
-    //         autoplay: 1,
-    //     },
-    // };
+    async function removeVideoFromPlayList(playList) {
+        try {
+            const res = await axios.delete(
+                `${API}/playlists/${playList._id}/videos`,
+                { data: { videoId: video._id } }
+            );
 
+            if (res.data.success === true) {
+                dispatch({
+                    type: 'REMOVE_VIDEO_FROM_PLAYLIST',
+                    payload: { name: playList.name, video: video },
+                });
+                toast.success(`Video removed from ${playList.name}`);
+            }
+        } catch (error) {
+            toast.error('error removing video from playlist');
+        }
+    }
     return (
         <div className="shadow-lg flex flex-col">
             {/* <YouTube videoId={video.videoId} opts={opts} onReady={onReady} /> */}
@@ -50,6 +67,13 @@ function VideoCard({ video }) {
                     <LikeVideoBtn video={video} />
                     <WatchLaterBtn video={video} />
                     <AddToPlayListBtn video={video} />
+                    {playList !== undefined ? (
+                        <button
+                            onClick={() => removeVideoFromPlayList(playList)}
+                        >
+                            <i class="fas fa-trash fa-lg"></i>
+                        </button>
+                    ) : null}
                 </div>
             </div>
         </div>

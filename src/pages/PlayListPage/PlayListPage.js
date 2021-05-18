@@ -3,12 +3,17 @@ import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import { VideoGrid } from '../../components/VideoGrid';
 import { useData } from '../../contexts/DataContext';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 import { EditPlayListModal } from './EditPlayListModal';
+import axios from 'axios';
+
+const API = 'http://localhost:3998';
 
 export function PlayListPage() {
     const { playListName } = useParams();
+
+    const navigate = useNavigate();
 
     const [showEditMenu, setShowEditMenu] = useState(false);
     const [newPlayListName, setNewPlayListName] = useState('');
@@ -18,23 +23,51 @@ export function PlayListPage() {
         dispatch,
     } = useData();
 
-    function renamePlayList() {
-        if (newPlayListName === '') {
-            toast.error('Name Can Not Be Left Empty');
-        }
+    async function renamePlayList() {
+        try {
+            if (newPlayListName === '') {
+                toast.error('Name Can Not Be Left Empty');
+            }
 
-        if (
-            playLists.find((list) => list.name === newPlayListName) !==
-            undefined
-        ) {
-            toast.error('Play List With This Name Already Exists');
-            return;
-        }
+            if (
+                playLists.find((list) => list.name === newPlayListName) !==
+                undefined
+            ) {
+                toast.error('Play List With This Name Already Exists');
+                return;
+            }
 
-        dispatch({
-            type: 'RENAME_PLAYLIST',
-            payload: { name: playListName, newName: newPlayListName },
-        });
+            const res = await axios.post(`${API}/playlists/${playList._id}`, {
+                name: newPlayListName,
+            });
+
+            if (res.data.success === true) {
+                dispatch({
+                    type: 'RENAME_PLAYLIST',
+                    payload: { name: playListName, newName: newPlayListName },
+                });
+            } else {
+                toast.error('error renaming playlist');
+            }
+        } catch (error) {
+            toast.error('error renaming playlist');
+        }
+    }
+
+    async function deletePlayList() {
+        try {
+            const res = await axios.delete(`${API}/playlists/${playList._id}`);
+
+            if (res.data.success === true) {
+                navigate('/');
+                dispatch({ type: 'DELETE_PLAYLIST', payload: playList._id });
+            } else {
+                console.log(res);
+                toast.error('error in deleting playlist');
+            }
+        } catch (error) {
+            toast.error('error in deleting playlist');
+        }
     }
 
     const playList = playLists.find((list) => list.name === playListName);
@@ -63,11 +96,12 @@ export function PlayListPage() {
                             setShowEditMenu={setShowEditMenu}
                             renamePlayList={renamePlayList}
                             setNewPlayListName={setNewPlayListName}
+                            deletePlayList={deletePlayList}
                         />
                     )}
                 </div>
             </div>
-            <VideoGrid videos={playList.videos} />
+            <VideoGrid videos={playList.videos} playList={playList} />
         </div>
     );
 }

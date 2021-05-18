@@ -2,6 +2,7 @@ export function EditPlayListModal({
     setShowEditMenu,
     renamePlayList,
     setNewPlayListName,
+    deletePlayList,
 }) {
     return (
         <div
@@ -29,7 +30,10 @@ export function EditPlayListModal({
                     </button>
                 </div>
 
-                <button className="bg-red-500 text-gray-50 px-4 py-1 rounded my-2">
+                <button
+                    className="bg-red-500 text-gray-50 px-4 py-1 rounded my-2"
+                    onClick={deletePlayList}
+                >
                     Delete Play List <i className="far fa-trash-alt ml-2"></i>
                 </button>
             </div>

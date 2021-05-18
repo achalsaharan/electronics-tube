@@ -1,37 +1,36 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
+import { useAuthentication } from '../../contexts/AuthenticationContext';
 
-export function AddNote({ video, dispatch }) {
+const API = 'http://localhost:3998';
+
+export function AddNote({ video, dispatch, notes, setNotes }) {
     const [noteBody, setNoteBody] = useState('');
     const [noteHeading, setNoteHeading] = useState('');
 
-    async function handleAddClick() {
+    const {
+        state: { userId },
+    } = useAuthentication();
+
+    async function addNote() {
         try {
-            const videoToPost = {
-                ...video,
-                notes: [
-                    ...video.notes,
-                    { heading: noteHeading, body: noteBody },
-                ],
-            };
-
-            const res = await axios.put(`/api/videos/${video.id}`, {
-                video: videoToPost,
+            const res = await axios.post(`${API}/notes`, {
+                userId,
+                videoId: video._id,
+                heading: noteHeading,
+                content: noteBody,
             });
-            console.log(res);
 
-            dispatch({
-                type: 'ADD_NOTE',
-                payload: {
-                    videoId: video.id,
-                    note: { heading: noteHeading, body: noteBody },
-                },
-            });
-            setNoteHeading('');
-            setNoteBody('');
+            if (res.data.success === true) {
+                setNotes([...notes, res.data.note]);
+                setNoteHeading('');
+                setNoteBody('');
+            } else {
+                toast.error('error adding notes');
+            }
         } catch (err) {
-            //TODO add toast here
-            console.log('err adding note');
+            toast.error('error adding notes');
         }
     }
 
@@ -47,7 +46,7 @@ export function AddNote({ video, dispatch }) {
                 />
                 <button
                     className="bg-red-500 px-2 py-1 rounded text-gray-50 ml-2"
-                    onClick={handleAddClick}
+                    onClick={addNote}
                 >
                     {/* <i className="fas fa-plus"></i> */}
                     Add Note

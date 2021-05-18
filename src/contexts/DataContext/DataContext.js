@@ -57,6 +57,7 @@ export function DataProvider({ children }) {
         state: { userId },
     } = useAuthentication();
 
+    //getting videos
     useEffect(() => {
         async function getVideos() {
             try {
@@ -71,6 +72,7 @@ export function DataProvider({ children }) {
         getVideos();
     }, []);
 
+    //getting videos
     useEffect(() => {
         async function getLikedVideos() {
             try {
@@ -84,6 +86,25 @@ export function DataProvider({ children }) {
 
         if (userId !== null) {
             getLikedVideos();
+        }
+    }, [userId]);
+
+    //getting play lists
+    useEffect(() => {
+        async function getPlayLists() {
+            try {
+                const res = await axios.get(`${API}/playlists/users/${userId}`);
+                // console.log({ playLists: res.data.playLists });
+                dispatch({
+                    type: 'SET_PLAYLISTS',
+                    payload: res.data.playLists,
+                });
+            } catch (error) {
+                console.error('play lists -> ', error);
+            }
+        }
+        if (userId !== null) {
+            getPlayLists();
         }
     }, [userId]);
 

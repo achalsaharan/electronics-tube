@@ -3,6 +3,9 @@ import { toast } from 'react-toastify';
 import { useData } from '../../contexts/DataContext';
 import { useAuthentication } from '../../contexts/AuthenticationContext';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+const API = 'http://localhost:3998';
 
 export function AddToPlayListBtn({ video }) {
     const [showDescription, setShowDescription] = useState(false);
@@ -47,24 +50,52 @@ function PlayListModal({ setShowPlayListModal, video }) {
     const [newPlayListName, setNewPlayListName] = useState('');
 
     const {
+        state: { userId },
+    } = useAuthentication();
+
+    const {
         state: { playLists },
         dispatch,
     } = useData();
 
-    function addVideoToPlayList(playList) {
-        toast.success(`Video removed from ${playList.name}`);
-        dispatch({
-            type: 'REMOVE_VIDEO_FROM_PLAYLIST',
-            payload: { name: playList.name, video: video },
-        });
+    async function removeVideoFromPlayList(playList) {
+        try {
+            const res = await axios.delete(
+                `${API}/playlists/${playList._id}/videos`,
+                { data: { videoId: video._id } }
+            );
+
+            if (res.data.success === true) {
+                dispatch({
+                    type: 'REMOVE_VIDEO_FROM_PLAYLIST',
+                    payload: { name: playList.name, video: video },
+                });
+                toast.success(`Video removed from ${playList.name}`);
+            }
+        } catch (error) {
+            toast.error('error removing video from playlist');
+        }
     }
 
-    function removeVideoFromPlayList(playList) {
-        toast.success(`Video added to ${playList.name}`);
-        dispatch({
-            type: 'ADD_VIDEO_TO_PLAYLIST',
-            payload: { name: playList.name, video: video },
-        });
+    async function addVideoToPlayList(playList) {
+        try {
+            const res = await axios.post(
+                `${API}/playlists/${playList._id}/videos`,
+                {
+                    videoId: video._id,
+                }
+            );
+
+            if (res.data.success === true) {
+                dispatch({
+                    type: 'ADD_VIDEO_TO_PLAYLIST',
+                    payload: { name: playList.name, video: video },
+                });
+                toast.success(`Video added to ${playList.name}`);
+            }
+        } catch (error) {
+            toast.error('error adding video to playlist');
+        }
     }
 
     async function addNewPlayList() {
@@ -79,16 +110,25 @@ function PlayListModal({ setShowPlayListModal, video }) {
         }
 
         setNewPlayListName('');
-        dispatch({
-            type: 'CREATE_NEW_PLAYLIST',
-            payload: { name: newPlayListName, videos: [] },
+
+        const res = await axios.post(`${API}/playlists/users/${userId}`, {
+            name: newPlayListName,
         });
+
+        if (res.data.success === true) {
+            dispatch({
+                type: 'CREATE_NEW_PLAYLIST',
+                payload: res.data.playList,
+            });
+        } else {
+            toast.error('error in creating a new playlist');
+        }
     }
 
     function isVideoInPlayList(playList) {
+        //console.log(playList);
         if (
-            playList.videos.find((item) => item.videoId === video.videoId) !==
-            undefined
+            playList.videos.find((item) => item._id === video._id) !== undefined
         ) {
             return true;
         } else {
@@ -99,9 +139,9 @@ function PlayListModal({ setShowPlayListModal, video }) {
     async function togglePlayListMembership(playList) {
         try {
             if (isVideoInPlayList(playList)) {
-                addVideoToPlayList(playList);
-            } else {
                 removeVideoFromPlayList(playList);
+            } else {
+                addVideoToPlayList(playList);
             }
         } catch (error) {
             console.log(error);
@@ -132,7 +172,7 @@ function PlayListModal({ setShowPlayListModal, video }) {
                 <div className="flex flex-col divide-y divide-gray-400">
                     {playLists.map((playList) => (
                         <label
-                            key={playList.id}
+                            key={playList._id}
                             className="flex items-center justify-between py-2 cursor-pointer"
                         >
                             <input
