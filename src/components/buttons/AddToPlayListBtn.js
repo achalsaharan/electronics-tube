@@ -5,7 +5,7 @@ import { useAuthentication } from '../../contexts/AuthenticationContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API = 'http://localhost:3998';
+import { API } from '../../constants';
 
 export function AddToPlayListBtn({ video }) {
     const [showDescription, setShowDescription] = useState(false);
@@ -25,7 +25,9 @@ export function AddToPlayListBtn({ video }) {
                 onClick={() =>
                     userId !== null
                         ? setShowPlayListModal(true)
-                        : navigate('/login')
+                        : navigate('/login', {
+                              state: { from: 'play list btn' },
+                          })
                 }
                 className="static"
             >
@@ -126,7 +128,6 @@ function PlayListModal({ setShowPlayListModal, video }) {
     }
 
     function isVideoInPlayList(playList) {
-        //console.log(playList);
         if (
             playList.videos.find((item) => item._id === video._id) !== undefined
         ) {

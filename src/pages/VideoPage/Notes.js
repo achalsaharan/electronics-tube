@@ -7,7 +7,6 @@ export function Notes({ notes }) {
             ))}
         </div>
     );
-    return;
 }
 
 function Note({ note }) {

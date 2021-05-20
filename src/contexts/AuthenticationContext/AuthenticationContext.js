@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { createContext, useContext, useState } from 'react';
 import { toast } from 'react-toastify';
+import { API } from '../../constants';
 
 const AuthenticationContext = createContext();
 
@@ -15,12 +16,10 @@ export function AuthenticationProvider({ children }) {
     // returns boolean, based on success
     async function loginUserWithEmailAndPassword(email, password) {
         try {
-            const res = await axios.post('http://localhost:3998/auth/login', {
+            const res = await axios.post(`${API}/auth/login`, {
                 email: email,
                 password: password,
             });
-
-            console.log(res);
 
             if (res.data.success === true) {
                 setState({
@@ -45,9 +44,8 @@ export function AuthenticationProvider({ children }) {
     // registers user, DOES NOT set state or logs in
     // returns boolena, based on success
     async function registerUser(firstName, lastName, email, password) {
-        console.log({ firstName, lastName, email, password });
         try {
-            const res = await axios.post('http://localhost:3998/users', {
+            const res = await axios.post(`${API}/users`, {
                 firstName,
                 lastName,
                 email,
@@ -67,9 +65,22 @@ export function AuthenticationProvider({ children }) {
         }
     }
 
+    async function logoutUser() {
+        setState({
+            email: null,
+            firstName: null,
+            userId: null,
+        });
+    }
+
     return (
         <AuthenticationContext.Provider
-            value={{ state, loginUserWithEmailAndPassword, registerUser }}
+            value={{
+                state,
+                loginUserWithEmailAndPassword,
+                registerUser,
+                logoutUser,
+            }}
         >
             {children}
         </AuthenticationContext.Provider>

@@ -7,20 +7,6 @@ import {
 } from '../../components/buttons';
 
 export function VideoWindow({ video }) {
-    function onReady(event) {
-        // access to player in all event handlers via event.target
-        event.target.pauseVideo();
-    }
-
-    const opts = {
-        height: '350px',
-        width: '100%',
-        playerVars: {
-            // https://developers.google.com/youtube/player_parameters
-            autoplay: 1,
-        },
-    };
-
     return (
         <div className="flex flex-col px-2 md:col-span-2">
             {/* <YouTube videoId={video.videoId} opts={opts} onReady={onReady} /> */}

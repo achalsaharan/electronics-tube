@@ -49,15 +49,12 @@ export function VideoPage() {
 
     useEffect(() => {
         async function getNotes() {
-            console.log(userId, video._id);
             try {
-                console.log(userId, video._id);
                 const res = await axios.get(
                     `${API}/notes/users/${userId}/${video._id}`
                 );
 
                 if (res.data.success === true) {
-                    console.log('notes', res.data);
                     setNotes(res.data.notes);
                 } else {
                     toast.error('error getting notes');
@@ -68,7 +65,6 @@ export function VideoPage() {
         }
 
         if (userId && video._id) {
-            console.log('getting notes.....');
             getNotes();
         }
     }, [video, userId]);
@@ -77,17 +73,19 @@ export function VideoPage() {
         <div className="grid grid-cols-1 md:grid-cols-3">
             <VideoWindow video={video} />
             {/* //TODO intgrate this functionality */}
-            <div className="flex flex-col grid-cols-1 px-2 pt-2 space-y-2 mb-5 md:mb-0 md:pt-0 md:col-span-1">
-                <AddNote
-                    video={video}
-                    dispatch={dispatch}
-                    notes={notes}
-                    setNotes={setNotes}
-                />
-                <div className="flex-grow">
-                    <Notes notes={notes} />
+            {userId && (
+                <div className="flex flex-col grid-cols-1 px-2 pt-2 space-y-2 mb-5 md:mb-0 md:pt-0 md:col-span-1">
+                    <AddNote
+                        video={video}
+                        dispatch={dispatch}
+                        notes={notes}
+                        setNotes={setNotes}
+                    />
+                    <div className="flex-grow">
+                        <Notes notes={notes} />
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

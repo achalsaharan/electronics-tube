@@ -1,11 +1,16 @@
 import { useState } from 'react';
-import { Sidebar } from './Sidebar';
 import { SidebarModal } from './SidebarModal';
 
 import { useNavigate } from 'react-router-dom';
+import { useAuthentication } from '../contexts/AuthenticationContext';
 
-export function Header({ setRoute }) {
+export function Header() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const {
+        state: { userId },
+        logoutUser,
+    } = useAuthentication();
     const navigate = useNavigate();
     return (
         <>
@@ -22,28 +27,34 @@ export function Header({ setRoute }) {
                     </button>
                     <h1 className="text-lg font-bold">Video Library</h1>
                     <div className="flex space-x-4 ml-auto">
-                        <button
-                            className="hover:text-red-800"
-                            onClick={() => navigate('/login')}
-                        >
-                            Login
-                        </button>
-                        <button
-                            className="hover:text-red-800"
-                            onClick={() => navigate('/signup')}
-                        >
-                            Register
-                        </button>
+                        {userId ? (
+                            <button
+                                className="hover:text-red-800"
+                                onClick={() => logoutUser()}
+                            >
+                                Logout
+                            </button>
+                        ) : (
+                            <>
+                                <button
+                                    className="hover:text-red-800"
+                                    onClick={() => navigate('/login')}
+                                >
+                                    Login
+                                </button>
+                                <button
+                                    className="hover:text-red-800"
+                                    onClick={() => navigate('/signup')}
+                                >
+                                    Register
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
 
-            {sidebarOpen && (
-                <SidebarModal
-                    setSidebarOpen={setSidebarOpen}
-                    setRoute={setRoute}
-                />
-            )}
+            {sidebarOpen && <SidebarModal setSidebarOpen={setSidebarOpen} />}
         </>
     );
 }

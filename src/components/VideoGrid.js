@@ -1,9 +1,6 @@
 import { Link } from 'react-router-dom';
-import YouTube from 'react-youtube';
 import { toast } from 'react-toastify';
 import { useData } from '../contexts/DataContext';
-// import { useAuthentication } from '../../contexts/AuthenticationContext';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
     AddToPlayListBtn,
@@ -11,12 +8,11 @@ import {
     WatchLaterBtn,
 } from '../components/buttons';
 
-const API = 'http://localhost:3998';
+import { API } from '../constants';
 
 export function VideoGrid({ videos, playList }) {
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-2 pb-2">
-            {console.log(playList)}
             {videos.map((item, key) => (
                 <VideoCard key={key} video={item} playList={playList} />
             ))}
@@ -25,10 +21,7 @@ export function VideoGrid({ videos, playList }) {
 }
 
 function VideoCard({ video, playList }) {
-    const {
-        state: { playLists },
-        dispatch,
-    } = useData();
+    const { dispatch } = useData();
 
     async function removeVideoFromPlayList(playList) {
         try {
@@ -51,7 +44,12 @@ function VideoCard({ video, playList }) {
     return (
         <div className="shadow-lg flex flex-col">
             {/* <YouTube videoId={video.videoId} opts={opts} onReady={onReady} /> */}
-            <img src={video.thumbnailUrl} height="auto" width="100%" />
+            <img
+                src={video.thumbnailUrl}
+                alt={'could not load thumbnail'}
+                height="auto"
+                width="100%"
+            />
             <div className="p-4 flex flex-col flex-grow">
                 <div className="flex-grow">
                     <h1 className="font-bold">{video.name}</h1>

@@ -2,49 +2,10 @@ import { createContext, useContext, useEffect, useReducer } from 'react';
 import axios from 'axios';
 import { dataReducer } from './dataReducer';
 import { useAuthentication } from '../AuthenticationContext';
+
+import { API } from '../../constants';
+
 export const DataContext = createContext();
-
-const API = 'http://localhost:3998';
-
-const initialStateFromAPI = {
-    videos: [
-        {
-            id: 'Zp8a0IskmkE',
-            name: 'Startups vs Service Companies',
-            notes: [
-                { heading: 'Note heading', body: 'note body' },
-                { heading: 'Note heading 2', body: 'note body 2' },
-            ],
-            views: '135,677',
-            date: 'Jan 19, 2021 ',
-        },
-        {
-            id: '4d073Hl9cyc',
-            name: 'Stephen Curry Mix - "Stole The Show" ',
-            notes: [],
-            views: '135,677',
-            date: 'Jan 19, 2021 ',
-        },
-        {
-            id: 'InVDXJCHLww',
-            name: 'Internships or Not',
-            notes: [],
-            views: '135,677',
-            date: 'Jan 19, 2021 ',
-        },
-        {
-            id: 'MMEIVh49pS8',
-            name: 'Getting started with Git, VSCode and Hosting',
-            notes: [],
-            views: '135,677',
-            date: 'Jan 19, 2021 ',
-        },
-    ],
-
-    playlists: {
-        'watch later': ['InVDXJCHLww'],
-    },
-};
 
 export function DataProvider({ children }) {
     const [state, dispatch] = useReducer(dataReducer, {

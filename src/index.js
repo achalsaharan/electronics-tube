@@ -4,11 +4,8 @@ import './index.css';
 import App from './App';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { DataProvider } from './contexts/DataContext';
-import { setupMockServer } from './api/server';
 
 import { AuthenticationProvider } from './contexts/AuthenticationContext';
-
-//setupMockServer();
 
 ReactDOM.render(
     <React.StrictMode>
