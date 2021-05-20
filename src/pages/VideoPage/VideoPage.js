@@ -9,7 +9,8 @@ import { useAuthentication } from '../../contexts/AuthenticationContext';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 
-const API = 'http://localhost:3998';
+import { API } from '../../constants';
+// const API = 'http://localhost:3998';
 
 export function VideoPage() {
     const { videoId } = useParams();
@@ -72,7 +73,6 @@ export function VideoPage() {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3">
             <VideoWindow video={video} />
-            {/* //TODO intgrate this functionality */}
             {userId && (
                 <div className="flex flex-col grid-cols-1 px-2 pt-2 space-y-2 mb-5 md:mb-0 md:pt-0 md:col-span-1">
                     <AddNote

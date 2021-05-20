@@ -2,8 +2,7 @@ import axios from 'axios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useAuthentication } from '../../contexts/AuthenticationContext';
-
-const API = 'http://localhost:3998';
+import { API } from '../../constants';
 
 export function AddNote({ video, dispatch, notes, setNotes }) {
     const [noteBody, setNoteBody] = useState('');
