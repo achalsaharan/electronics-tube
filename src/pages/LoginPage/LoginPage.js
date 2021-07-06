@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { useAuthentication } from '../../contexts/AuthenticationContext';
@@ -18,7 +18,17 @@ export function LoginPage() {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
-    const { loginUserWithEmailAndPassword } = useAuthentication();
+
+    const {
+        loginUserWithEmailAndPassword,
+        state: { userId },
+    } = useAuthentication();
+
+    useEffect(() => {
+        if (userId) {
+            navigate('/');
+        }
+    }, [userId]);
 
     async function login() {
         setLoading(true);

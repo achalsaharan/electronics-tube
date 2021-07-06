@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { API } from '../../constants';
 
@@ -10,7 +11,40 @@ export function AuthenticationProvider({ children }) {
         email: null,
         firstName: null,
         userId: null,
+        token: null,
     });
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage?.getItem('user'));
+        if (user) {
+            setState(user);
+            setupAuthHeaderForServiceCalls(user.token);
+        }
+        setupAuthExceptionHandler(logoutUser, navigate);
+    }, []);
+
+    function setupAuthHeaderForServiceCalls(token) {
+        if (token) {
+            return (axios.defaults.headers.common['Authorization'] = token);
+        }
+        delete axios.defaults.headers.common['Authorization'];
+    }
+
+    function setupAuthExceptionHandler(logoutUser, navigate) {
+        const UNAUTHORIZED = 401;
+        axios.interceptors.response.use(
+            (response) => response,
+            (error) => {
+                if (error?.response?.status === UNAUTHORIZED) {
+                    logoutUser();
+                    navigate('login');
+                }
+                return Promise.reject(error);
+            }
+        );
+    }
 
     // logs users in, sets states and handles error
     // returns boolean, based on success
@@ -21,13 +55,30 @@ export function AuthenticationProvider({ children }) {
                 password: password,
             });
 
+            console.log(res.data);
+
             if (res.data.success === true) {
                 setState({
                     email: res.data.user.email,
                     firstName: res.data.user.firstName,
                     userId: res.data.user._id,
+                    token: res.data.token,
                 });
                 toast.success('Logged In');
+
+                //setting user details in local storage
+
+                localStorage?.setItem(
+                    'user',
+                    JSON.stringify({
+                        userId: res.data.user._id,
+                        email: res.data.user.email,
+                        firstName: res.data.user.firstName,
+                        token: res.data.token,
+                    })
+                );
+
+                setupAuthHeaderForServiceCalls(res.data.token);
 
                 return true;
             } else {
@@ -71,6 +122,8 @@ export function AuthenticationProvider({ children }) {
             firstName: null,
             userId: null,
         });
+
+        localStorage?.removeItem('user');
     }
 
     return (
