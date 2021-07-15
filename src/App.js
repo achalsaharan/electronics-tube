@@ -16,6 +16,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { SearchResults } from './pages/SearchResults';
 
 function ProtectedRoute({ path, ...props }) {
     const {
@@ -54,15 +55,21 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
 
+                        <Route path="/video/:videoId" element={<VideoPage />} />
+
+                        <Route path="login" element={<LoginPage />} />
+
+                        <Route path="signup" element={<SignUpPage />} />
+
+                        <Route
+                            path="searchresults/:search"
+                            element={<SearchResults />}
+                        />
+
                         <ProtectedRoute
                             path="/likedVideos"
                             element={<LikedVideosPage />}
                         />
-
-                        {/* <Route
-                            path="/likedVideos"
-                            element={<LikedVideosPage />}
-                        /> */}
 
                         <ProtectedRoute
                             path="/watchLater"
@@ -73,12 +80,6 @@ function App() {
                             path="/playlist/:playListName"
                             element={<PlayListPage />}
                         />
-
-                        <Route path="/video/:videoId" element={<VideoPage />} />
-
-                        <Route path="login" element={<LoginPage />} />
-
-                        <Route path="signup" element={<SignUpPage />} />
                     </Routes>
                 </div>
             </div>

@@ -8,6 +8,10 @@ export function dataReducer(state, action) {
             return { ...state, videos: action.payload };
         }
 
+        case 'SET_VIDEOS_TO_DISPLAY': {
+            return { ...state, videosToDisplay: action.payload };
+        }
+
         case 'SET_LIKED_VIDEOS': {
             return { ...state, likedVideos: action.payload };
         }

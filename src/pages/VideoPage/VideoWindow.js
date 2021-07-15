@@ -24,11 +24,10 @@ export function VideoWindow({ video }) {
                 <div className="flex items-center justify-between mt-4">
                     <div className="flex space-x-4 font-light text-xs">
                         <span>{video.views} views</span>
-                        <span>{video.date}</span>
                     </div>
 
                     <div className="flex flex-row space-x-8">
-                        <PlayVideoBtn />
+                        {/* <PlayVideoBtn /> */}
                         <LikeVideoBtn video={video} />
                         <WatchLaterBtn video={video} />
                         <AddToPlayListBtn video={video} />

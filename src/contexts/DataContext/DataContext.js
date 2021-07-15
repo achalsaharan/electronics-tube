@@ -12,6 +12,7 @@ export function DataProvider({ children }) {
         videos: [],
         playLists: [{ name: 'watch later', videos: [] }],
         likedVideos: [],
+        videosToDisplay: [],
     });
 
     const {
@@ -25,6 +26,7 @@ export function DataProvider({ children }) {
                 const res = await axios.get(`${API}/videos`);
                 const videos = res.data.videos;
                 dispatch({ type: 'SET_VIDEOS', payload: videos });
+                dispatch({ type: 'SET_VIDEOS_TO_DISPLAY', payload: videos });
             } catch (error) {
                 console.error(error);
             }
