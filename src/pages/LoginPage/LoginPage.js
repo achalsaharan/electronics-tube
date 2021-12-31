@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
 import { useAuthentication } from '../../contexts/AuthenticationContext';
-import { btnPrimary } from '../../styles';
+import { btnPrimary, btnSecondary } from '../../styles';
+// import { btnSecondary } from '../../styles/styles';
 
 function LoadingModal() {
     return (
@@ -16,6 +17,7 @@ export function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const [testUser, setTestUser] = useState(false);
 
     const navigate = useNavigate();
 
@@ -29,6 +31,18 @@ export function LoginPage() {
             navigate('/');
         }
     }, [userId]);
+
+    useEffect(() => {
+        if (testUser == true) {
+            login();
+        }
+    }, [testUser]);
+
+    async function testUserLogin() {
+        setEmail('testUser@gmail.com');
+        setPassword('testUserPassword');
+        setTestUser(true);
+    }
 
     async function login() {
         setLoading(true);
@@ -75,6 +89,9 @@ export function LoginPage() {
                 />
                 <button className={btnPrimary} onClick={login}>
                     LOGIN
+                </button>
+                <button className={btnSecondary} onClick={testUserLogin}>
+                    Quick Login With Test Account
                 </button>
                 {loading && <LoadingModal />}
             </div>

@@ -25,7 +25,7 @@ export function Header() {
                     >
                         <i className="fas fa-bars fa-lg "></i>
                     </button>
-                    <h1 className="text-lg font-bold">Video Library</h1>
+                    <h1 className="text-lg font-bold">Electronics Tube</h1>
                     <div className="flex space-x-4 ml-auto">
                         {userId ? (
                             <button
