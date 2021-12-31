@@ -1,1 +1,1 @@
-export { btnPrimary } from './styles';
+export { btnPrimary, btnSecondary } from './styles';
